@@ -609,7 +609,7 @@ botonCalido.addEventListener("click", () => {
   localStorage.getItem("paisesCalidos");
 
   let h3 = document.createElement("h3");
-  h3.append("Las ciudades son  " + lista1);
+  h3.append("Las ciudades son   " + lista1);
   document.body.appendChild(h3);
 });
 document.body.appendChild(botonCalido);
