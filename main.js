@@ -1,3 +1,5 @@
+//constructor y clase para crear los objetos
+
 class Clima {
   constructor(
     nombre,
@@ -36,9 +38,31 @@ class Clima {
     this.huracanes = huracanes;
     this.Tornados = tornados;
   }
+
+  //Dos metodos que sacan el promedio de la temperatura y calulan las lluvias totales
+  temperaturaPromedio() {
+    return (
+      (this.temperaturaEnero +
+        this.temperaturaAbril +
+        this.temperaturaJulio +
+        this.temperaturaSeptiembre) /
+      4
+    );
+  }
+  lluviasTotales() {
+    return (
+      this.lluviaAbril +
+      this.lluviaEnero +
+      this.lluviaJulio +
+      this.lluviaSeptiembre
+    );
+  }
 }
 
+//pusheamos los objetos instanciados en el array
+
 const ciudades = [];
+
 ciudades.push(
   new Clima(
     "roma",
@@ -188,7 +212,7 @@ ciudades.push(
 );
 ciudades.push(
   new Clima(
-    "El Cabo",
+    "Cabo",
     "Sudafrica",
     8,
     true,
@@ -314,7 +338,7 @@ ciudades.push(
   ),
   ciudades.push(
     new Clima(
-      "Nueva Dheli",
+      "Dheli",
       "India",
       14,
       false,
@@ -377,7 +401,7 @@ ciudades.push(
   ),
   ciudades.push(
     new Clima(
-      "Nueva york",
+      "NY",
       "EE. UU.",
       17,
       true,
@@ -419,7 +443,7 @@ ciudades.push(
   ),
   ciudades.push(
     new Clima(
-      "Rio de janeiro",
+      "Rio",
       "Brasil",
       19,
       true,
@@ -461,14 +485,14 @@ ciudades.push(
   );
 ciudades.push(
   new Clima(
-    "Buenos Aires",
+    "BA",
     "Argentina",
     21,
     false,
-    29,
+    28,
     15,
-    25,
-    19,
+    14,
+    17,
     450,
     300,
     260,
@@ -480,46 +504,140 @@ ciudades.push(
     true
   )
 );
-let bienvenida = alert("bienvenidos a la app climatica");
 
-alert("si buscas ciudades calidas en enero, estas tienen mas de 25° dicho mes");
-const filtradoEnero1 = ciudades.filter((ciudad) => {
-  return ciudad.temperaturaEnero > 25;
-});
-let lista1 = "";
-for (let i = 0; i < filtradoEnero1.length; i++) {
-  console.log(filtradoEnero1.length);
-  lista1 = lista1 + filtradoEnero1[i].nombre + "\n";
+//introducimos el array en formato JSON en el localstorage, luego lo traemos parseado
+const ciudadesStringificado = JSON.stringify(ciudades);
+localStorage.setItem("ciudadesStringificado", ciudadesStringificado);
+const ciudadesSinJSON = JSON.parse(ciudadesStringificado);
+localStorage.getItem("ciudadesSinJSON", ciudadesSinJSON);
+
+//titulo introductorio de la app. interaccion con el DOM
+document.getElementById("presentacion").innerHTML =
+  "bienvenidos a la app climatica";
+
+//titulo introductorio de la app. interaccion con el DOM
+document.getElementById("ciudades").innerHTML = "ciudades";
+
+//llamo por intermedio de un ID un div en el HTML. En el a traves de template literals, voy iterando los datos del array en "tarjetitas." Ademas asocio los metodos del constructor y atraves de un click (utilizacion de eventos) permito determinar que tipo de clima tiene una ciudad
+let div = document.getElementById("cartitas");
+div.innerHTML = "";
+let tempPromedio = "";
+let lluviasTotales = "";
+for (let i = 0; i < ciudades.length; i++) {
+  tempPromedio = ciudades[i].temperaturaPromedio();
+  lluviasTotales = ciudades[i].lluviasTotales();
+  div.innerHTML =
+    div.innerHTML +
+    `<div id="${ciudades[i].nombre}" style="border:red 1px solid; margin:50px; padding:150px"> <h2>${ciudades[i].nombre}</h2><h3>${ciudades[i].pais}</h3><h4> temperatura de enero: ${ciudades[i].temperaturaEnero}</h4><h4> Temperatura en abril: ${ciudades[i].temperaturaAbril}</h4><h4>Temperatura en julio: ${ciudades[i].temperaturaJulio}</h4><h4> Temperatura en septiembre:${ciudades[i].temperaturaSeptiembre}</h4><h4>Lluvias en enero: ${ciudades[i].lluviaEnero}</h4><h4>Lluvias en abril: ${ciudades[i].lluviaAbril}</h4><h4>Lluvias en julio: ${ciudades[i].lluviaJulio}</h4> <h4>la temperatura promedio es ${tempPromedio}</h4><h4>las lluvias totales son: ${lluviasTotales} mm.</h4><button onClick = "descripcion(${i})">Descripcion climatica</button></div>`;
+  console.log(tempPromedio);
 }
 
-alert(lista1);
+function descripcion(i) {
+  lluviasTotales = ciudades[i].lluviasTotales();
+  tempPromedio = ciudades[i].temperaturaPromedio();
+  if ((tempPromedio < 10) & (lluviasTotales < 500)) {
+    h2 = document.createElement("h2");
+    h2.innerHTML =
+      "ES UN CLIMA FRIO Y SECO; extensas areas del centro de rusia y mongolia. Muy escasa vegetacion. Muy pocas especies sobreviven a estas condiciones";
+    let divConId = document.getElementById(`${ciudades[i].nombre}`);
 
-alert("si buscas ciudades frias en enero, estas tienen menos de 7° dicho mes");
-const filtradoEnero2 = ciudades.filter((ciudad) => {
-  return ciudad.temperaturaEnero < 7;
-});
-let lista2 = "";
-for (let i = 0; i < filtradoEnero2.length; i++) {
-  console.log(filtradoEnero2.length);
-  lista2 = lista2 + filtradoEnero2[i].nombre + "\n";
+    divConId.append(h2);
+  } else if ((tempPromedio < 10) & (lluviasTotales > 500)) {
+    h2 = document.createElement("h2");
+    h2.innerHTML =
+      "ES UN CLIMA FRIO Y HUMEDO; escandinavia, canada, el sur Argentino y areas de rusia y Alazka. Predominan los bosques compuestos de arces y pinos, y a medido que dismunuye la temperatura se transiciona a la tundra polar";
+    let divConId = document.getElementById(`${ciudades[i].nombre}`);
+
+    divConId.append(h2);
+  } else if (
+    (tempPromedio >= 10) &
+    (tempPromedio < 20) &
+    (lluviasTotales < 500)
+  ) {
+    h2 = document.createElement("h2");
+    h2.innerHTML =
+      "ES UN CLIMA TEMPLADO Y SECO; temperaturas moderadas, con escasa precipitaciones. Prevalece la vegetacion baja, casi siempre perenee";
+    let divConId = document.getElementById(`${ciudades[i].nombre}`);
+
+    divConId.append(h2);
+  } else if (
+    (tempPromedio >= 10) &
+    (tempPromedio < 20) &
+    (lluviasTotales > 500)
+  ) {
+    h2 = document.createElement("h2");
+    h2.innerHTML =
+      "ES UN CLIMA TEMPLADO Y HUMEDO; prevalece en zonas costeras de latitudes medias (china, argentina, Estados Unidos y casi la totalidad de Europa. Prevalece el bosque caducifolio templeado (manzanos, arces, tilos, pinos etc)";
+    let divConId = document.getElementById(`${ciudades[i].nombre}`);
+
+    divConId.append(h2);
+  } else if ((tempPromedio > 20) & (lluviasTotales > 500)) {
+    h2 = document.createElement("h2");
+    h2.innerHTML =
+      "ES UN CLIMA CALIDO Y HUMEDO;caribe y centroamerica, sudeste asiatico y africa subsahariana. Tambien sudamerica. Luvias abundantes y temperaturas qye van de suaves a muy calidas. Las zonas costeras son propensas a ciclones";
+    let divConId = document.getElementById(`${ciudades[i].nombre}`);
+
+    divConId.append(h2);
+  } else if ((tempPromedio > 20) & (lluviasTotales < 500)) {
+    h2 = document.createElement("h2");
+    h2.innerHTML =
+      "ES UN CLIMA CALIDO Y SECO Areas deserticas del centro de australia, sectores del centro de africa, Areas de california y Asia. Muy escasas lluvias y temperaturas en su mayoria extremas";
+    let divConId = document.getElementById(`${ciudades[i].nombre}`);
+
+    divConId.append(h2);
+  } else "no corresponde a ninguna clasificacion climatica de Koppen";
 }
 
-alert(lista2);
+//Creo en el DOM un boton, y atraves de los eventos(click) con un boton llamado frio determino que ciudades son frias, y con un boton llamado calido, cuales son las ciudades calidas
+//boton calido
+let h2a = document.createElement("h2");
+h2a.innerHTML =
+  "Estas ciudades presentan una temperatura superior a 25 grados en enero";
+document.body.appendChild(h2a);
+let botonCalido = document.createElement("button");
+botonCalido.innerText = "calido";
+botonCalido.addEventListener("click", () => {
+  const filtradoEnero1 = ciudades.filter((ciudad) => {
+    return ciudad.temperaturaEnero > 25;
+  });
+  let lista1 = "";
+  for (let i = 0; i < filtradoEnero1.length; i++) {
+    console.log(filtradoEnero1.length);
+    lista1 = lista1 + filtradoEnero1[i].nombre + " " + ",";
+  }
+  localStorage.setItem("paisesCalidos", lista1);
+  localStorage.getItem("paisesCalidos");
 
-alert(
-  "como elejimos ciudades de distintas partes del mundo, sus temperaturas representarian el promedio mundial"
-);
+  let h3 = document.createElement("h3");
+  h3.append("Las ciudades son  " + lista1);
+  document.body.appendChild(h3);
+});
+document.body.appendChild(botonCalido);
 
-const temperaturaPromedioEnero = ciudades.reduce((acc, ciudad) => {
-  return acc + ciudad.temperaturaEnero;
-}, 0);
-alert(
-  "la temperatura mundial promedio del Mes de enero es : " +
-    Math.round(temperaturaPromedioEnero / 21) +
-    "°"
-);
+//boton frio
 
-//arme un array con objetos instanciados con un constructor
-//use un metodo filter
-//use el metodo reduce
-//use Math
+let h2b = document.createElement("h2");
+h2b.innerHTML =
+  "Estas ciudades presentan una temperatura inferior a 7 grados en enero";
+document.body.appendChild(h2b);
+
+let botonFrio = document.createElement("button");
+botonFrio.innerText = "frio";
+botonFrio.addEventListener("click", () => {
+  const filtradoEnero1 = ciudades.filter((ciudad) => {
+    return ciudad.temperaturaEnero < 7;
+  });
+  let lista1 = "";
+  for (let i = 0; i < filtradoEnero1.length; i++) {
+    console.log(filtradoEnero1.length);
+    lista1 = lista1 + filtradoEnero1[i].nombre + " " + ",";
+  }
+
+  localStorage.setItem("paisesFrios", lista1);
+
+  localStorage.getItem("paisesFrios");
+  let h3 = document.createElement("h3");
+  h3.append("Las ciudades son  " + lista1);
+  document.body.appendChild(h3);
+});
+document.body.appendChild(botonFrio);
